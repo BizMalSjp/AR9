@@ -29,13 +29,17 @@ function arError() {
   notice.hidden = false;
   notice.textContent = 'ARを開始できませんでした。対応端末でSafariまたはChromeを使い、カメラの許可を確認してください。AndroidはGoogle Play開発者サービス（AR）も必要です。';
 }
-viewer.addEventListener('load', () => {
+function onModelLoad() {
+  if (ready) return;
   ready = true;
   document.getElementById('loading').hidden = true;
   for (const control of [play, restart, reset, timeline]) control.disabled = false;
   viewer.play();
   refreshAR();
-});
+}
+viewer.addEventListener('load',onModelLoad);
+// Cached GLB files can finish loading before this module is downloaded.
+if (viewer.loaded) onModelLoad();
 viewer.addEventListener('error', () => {
   ready = false;
   clearInterval(arCheckTimer);
