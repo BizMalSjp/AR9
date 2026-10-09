@@ -58,16 +58,16 @@ def channel(index, path, values):
 def ball_pose(t, ball):
     u = ((t/duration) + ball/4) % 1
     flight = math.sin(math.pi*u)
-    # Starts inside the mouth of the hat, spirals upward and returns to it.
-    radius = .20 * flight
-    angle = math.tau * 2*u + ball*.34
+    # All balls follow ONE closed orbit, with equal quarter-cycle spacing.
+    # A single non-crossing loop keeps the spheres separate throughout.
+    angle = math.tau*u
     # Move away from the character before expanding the orbit. Even the
     # largest sphere stays outside the head AND the floppy ear's bounds.
     away = min(1., flight/.30)
     away = away*away*(3-2*away)
-    pos = [-.50 - .52*away + radius*math.sin(angle),
-           .965 + (1.14 + .06*ball)*flight,
-           .11 + radius*.62*math.cos(angle)]
+    pos = [-.50 - .72*away + .36*math.sin(angle),
+           .965 + 1.25*(.5-.5*math.cos(angle)),
+           .11 + .20*math.sin(angle)]
     scale = max(.001, min(1., flight*5))
     return pos, [scale]*3
 
@@ -79,14 +79,37 @@ for mesh in doc['meshes']:
         acc = doc['accessors'][mesh['primitives'][0]['attributes']['POSITION']]
         head_bounds.append((mesh['name'],acc['min'],acc['max']))
 clearance = float('inf')
+ball_clearance = float('inf')
+# Check the interpolated poses actually encoded in the GLB, rather than
+# only checking the mathematical trajectory at the animation keyframes.
+keyposes = [[ball_pose(t,ball) for t in times] for ball in range(4)]
+for poses in keyposes:
+    poses[-1] = poses[0]
 for i in range(2401):
+    frame = min(i/8,300)
+    key = min(int(frame),299)
+    alpha = frame-key
+    sampled = []
+    for ball in range(4):
+        a,b = keyposes[ball][key:key+2]
+        pos = [x+(y-x)*alpha for x,y in zip(a[0],b[0])]
+        scale = [x+(y-x)*alpha for x,y in zip(a[1],b[1])]
+        assert max(scale)-min(scale) < 1e-9, 'Sphere distortion'
+        sampled.append((pos,scale))
     for ball,radius in enumerate([.17,.10,.08,.11]):
-        pos,scale = ball_pose(i/240,ball)
+        pos,scale = sampled[ball]
         for name,lo,hi in head_bounds:
             distance = math.sqrt(sum(max(lo[k]-pos[k],0,pos[k]-hi[k])**2 for k in range(3)))
             clearance = min(clearance,distance-radius*scale[0])
+        for other in range(ball):
+            other_pos,other_scale = sampled[other]
+            distance = math.sqrt(sum((a-b)**2 for a,b in zip(pos,other_pos)))
+            gap = distance-radius*scale[0]-[.17,.10,.08,.11][other]*other_scale[0]
+            ball_clearance = min(ball_clearance,gap)
 assert clearance > .025, f'Ball/head clearance too small: {clearance:.4f}'
+assert ball_clearance > .06, f'Ball/ball clearance too small: {ball_clearance:.4f}'
 print(f'Minimum conservative head/ear clearance: {clearance*.61:.3f}m')
+print(f'Minimum ball-to-ball surface gap: {ball_clearance*.61:.3f}m')
 
 for ball in range(4):
     index, _ = recenter('Floating polka sphere '+str(ball))
@@ -112,7 +135,7 @@ for name, eye_center, white_radius in [
     channel(index,'translation',gaze)
 
 doc['animations'] = [animation]
-doc['extras'] = {'description':'AR9 animation preview: four balls spiral out of the hat, while both pupils follow the pink ball. Original AR8 meshes retained; background is transparent.', 'durationSeconds':duration}
+doc['extras'] = {'description':'AR9 animation preview: four balls emerge from the hat and follow a collision-free orbit, while both pupils follow the pink ball. Original AR8 meshes retained; background is transparent.', 'durationSeconds':duration}
 doc['buffers'][0]['byteLength'] = len(binary)
 doc['asset']['generator'] = 'AR9 character animation'
 encoded = json.dumps(doc,separators=(',',':'),ensure_ascii=False).encode()

@@ -24,7 +24,7 @@ play.addEventListener('click', () => {
 restart.addEventListener('click', () => { viewer.currentTime = 0; viewer.play(); play.textContent = '一時停止'; });
 reset.addEventListener('click', () => {
   viewer.cameraOrbit = '0deg 78deg 3.1m';
-  viewer.cameraTarget = '-.26m .76m 0m';
+  viewer.cameraTarget = '-.36m .76m 0m';
   viewer.fieldOfView = '36deg';
   viewer.jumpCameraToGoal();
 });
