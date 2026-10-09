@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>AR9 | うさぎのマジック · 3Dアニメーション</title>
+  <title>AR9 | うさぎのマジック · 3D・AR</title>
+  <meta name="description" content="帽子からカラーボールが飛び出す青いうさぎを、3DとARで楽しめます。">
   <link rel="stylesheet" href="styles.css">
   <style>
     model-viewer{height:clamp(430px,68vh,800px)}
@@ -17,22 +18,29 @@
   <script type="module" src="preview.js"></script>
 </head>
 <body>
-  <header class="header"><a class="brand" href="./"><span class="brand-mark">AR9</span><span>BLUE RABBIT</span></a><span class="preview-tag">3Dアニメーション・プレビュー</span></header>
+  <header class="header"><a class="brand" href="./"><span class="brand-mark">AR9</span><span>BLUE RABBIT</span></a><span class="preview-tag">3D & AR</span></header>
   <main>
     <section class="intro"><p class="eyebrow">うさぎのマジック</p><h1>帽子から、カラフルな魔法。</h1><p>ボールが飛び出してくるくる。うさぎの瞳が動きを追いかけます。</p></section>
     <section class="viewer-card" aria-label="うさぎの3Dアニメーション">
       <model-viewer id="mascot" src="assets/blue-rabbit-animated.glb?v=2"
+        ios-src="assets/blue-rabbit-animated.usdz"
         alt="帽子から飛び出したカラーボールが間隔を空けて周回し、瞳がその動きを追う青いうさぎの3Dアニメーション"
         autoplay camera-controls interaction-prompt="none" touch-action="pan-y" camera-orbit="0deg 78deg 3.1m" camera-target="-.36m .76m 0m"
-        field-of-view="36deg" shadow-intensity="0.6" shadow-softness="1" exposure="1">
+        field-of-view="36deg" shadow-intensity="0.6" shadow-softness="1" exposure="1"
+        ar ar-modes="webxr quick-look" ar-placement="floor" ar-scale="auto" xr-environment>
         <div slot="progress-bar" class="loading" id="loading"><span class="spinner"></span><span>アニメーションを読み込み中…</span></div>
+        <button slot="ar-button" class="native-ar-button">ARで空間に置く</button>
+        <div slot="ar-prompt" class="ar-prompt" id="ar-prompt">端末をゆっくり動かして、床やテーブルを映してください。</div>
+        <button slot="exit-webxr-ar-button" class="exit-ar-button">ARを閉じる</button>
       </model-viewer>
       <p class="view-hint">指やマウスで回転 · ピンチ／ホイールで拡大縮小</p>
       <div class="viewer-controls"><button id="play" disabled>一時停止</button><button id="restart" disabled>最初から</button><button id="reset" disabled>向きを戻す</button></div>
       <label class="timeline">再生位置 <input id="timeline" type="range" min="0" max="10" step="0.01" value="0" disabled aria-label="アニメーションの再生位置"><output id="time">0.0 / 10秒</output></label>
     </section>
+    <section class="ar-panel" aria-labelledby="ar-title"><div><p class="eyebrow">VIEW IN YOUR SPACE</p><h2 id="ar-title">うさぎのマジックを、あなたの空間で。</h2><p id="ar-help" role="status">ARの対応状況を確認しています。</p></div><button id="launch-ar" class="primary" disabled>ARで表示する <span aria-hidden="true">↗</span></button></section>
     <p id="notice" class="notice" role="alert" hidden></p>
     <p class="view-hint">10秒の繰り返しアニメーションです。横や後ろからも立体の動きを確認できます。</p>
+    <details class="help"><summary>ARの操作方法・対応端末</summary><ul><li>iPhone・iPadはSafari、ARCore対応のAndroidはChromeで開いてください。</li><li>床やテーブルを映して配置します。配置後は移動・回転・拡大縮小ができます。</li><li>AndroidはGoogle Play開発者サービス（AR）が必要です。ARに対応しない端末では、ページ内の3Dアニメーションをご利用ください。</li><li>カメラ映像はサーバーへ送信しません。</li></ul></details>
   </main><footer>BLUE RABBIT · AR9</footer>
 </body>
 </html>
