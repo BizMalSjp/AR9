@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>AR9 | うさぎのマジック · 3Dアニメーション</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    model-viewer{height:clamp(430px,68vh,800px)}
+    .intro{margin:6px 0 18px}.intro h1{font-size:clamp(24px,4vw,32px)}
+    .preview-tag{font-size:12px;color:#64768d}
+    .timeline{display:flex;align-items:center;gap:12px;padding:0 24px 18px;color:#64768d;font-size:12px}
+    .timeline input{flex:1;accent-color:#075ccf;min-width:0}.timeline output{font-variant-numeric:tabular-nums;min-width:80px}
+    @media(max-width:620px){model-viewer{height:60vh;min-height:420px}}
+  </style>
+  <script type="module" src="vendor/model-viewer.min.js"></script>
+  <script type="module" src="preview.js"></script>
+</head>
+<body>
+  <header class="header"><a class="brand" href="./"><span class="brand-mark">AR9</span><span>BLUE RABBIT</span></a><span class="preview-tag">3Dアニメーション・プレビュー</span></header>
+  <main>
+    <section class="intro"><p class="eyebrow">うさぎのマジック</p><h1>帽子から、カラフルな魔法。</h1><p>ボールが飛び出してくるくる。うさぎの瞳が動きを追いかけます。</p></section>
+    <section class="viewer-card" aria-label="うさぎの3Dアニメーション">
+      <model-viewer id="mascot" src="assets/blue-rabbit-animated.glb"
+        alt="帽子からカラーボールが螺旋状に飛び出し、瞳がその動きを追う青いうさぎの3Dアニメーション"
+        autoplay camera-controls interaction-prompt="none" touch-action="pan-y" camera-orbit="0deg 78deg 3.1m" camera-target="-.26m .76m 0m"
+        field-of-view="36deg" shadow-intensity="0.6" shadow-softness="1" exposure="1">
+        <div slot="progress-bar" class="loading" id="loading"><span class="spinner"></span><span>アニメーションを読み込み中…</span></div>
+      </model-viewer>
+      <p class="view-hint">指やマウスで回転 · ピンチ／ホイールで拡大縮小</p>
+      <div class="viewer-controls"><button id="play" disabled>一時停止</button><button id="restart" disabled>最初から</button><button id="reset" disabled>向きを戻す</button></div>
+      <label class="timeline">再生位置 <input id="timeline" type="range" min="0" max="10" step="0.01" value="0" disabled aria-label="アニメーションの再生位置"><output id="time">0.0 / 10秒</output></label>
+    </section>
+    <p id="notice" class="notice" role="alert" hidden></p>
+    <p class="view-hint">10秒の繰り返しアニメーションです。横や後ろからも立体の動きを確認できます。</p>
+  </main><footer>BLUE RABBIT · AR9</footer>
+</body>
+</html>
